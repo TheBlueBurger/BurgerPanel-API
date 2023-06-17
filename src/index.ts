@@ -69,7 +69,12 @@ class WebSocketClient extends EventEmitter {
                 return;
             }
             this.emit(data.r, data);
-        })
+        });
+        setInterval(() => {
+            if(this.client.readyState == ws.OPEN) {
+                this.sendRequest("ping", {});
+            }
+        }, 30_000);
     }
     async sendRequest(packetName: string, data: any) {
         let rid = this.currentRequestID++;
