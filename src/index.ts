@@ -1,5 +1,7 @@
 import ws from "ws";
 import { once, EventEmitter } from "events";
+import {RequestResponses} from "../BurgerPanel/Share/Requests.js"
+import assert from "node:assert"
 
 export default class BurgerPanelAPI {
     apiURL: string;
@@ -9,7 +11,7 @@ export default class BurgerPanelAPI {
         if(!this.apiURL.endsWith("/")) this.apiURL += "/";
         this.token = token;
     }
-    async makeRequest(name: string, data: any) {
+    async makeRequest<T extends keyof RequestResponses>(name: T, data: any): Promise<RequestResponses[T]> {
         let headers = new Headers();
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", this.token);
@@ -31,16 +33,20 @@ export default class BurgerPanelAPI {
         return await this.makeRequest("startServer", {id});
     }
     async getLogs(id: string) {
-        return await this.makeRequest("serverLogs", {
+        let resp = await this.makeRequest("serverLogs", {
             list: true,
             id
-        })
+        });
+        assert(resp.type == "list");
+        return resp;
     }
     async getLog(id: string, logName: string) {
-        return await this.makeRequest("serverLogs", {
+        let resp = await this.makeRequest("serverLogs", {
             log: logName,
             id
-        })
+        });
+        assert(resp.type == "log");
+        return resp;
     }
     async writeToConsole(id: string, command: string) {
         return await this.makeRequest("writeToConsole", {
@@ -76,7 +82,7 @@ class WebSocketClient extends EventEmitter {
             }
         }, 30_000);
     }
-    async sendRequest(packetName: string, data: any) {
+    async sendRequest<T extends keyof RequestResponses>(packetName: T, data: any): Promise<RequestResponses[T]> {
         let rid = this.currentRequestID++;
         this.client.send(JSON.stringify({
             n: packetName,

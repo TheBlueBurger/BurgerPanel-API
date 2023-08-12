@@ -1,11 +1,12 @@
 {
   "name": "burgerpanel-api",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "dist/index.js",
+  "types": "types/src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "start": "pnpm build && node dist/test"
+    "prepack": "rm -rfv dist/BurgerPanel"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,3 @@
+[submodule "BurgerPanel"]
+	path = BurgerPanel
+	url = git@github.com:TheBlueBurger/BurgerPanel.git
